@@ -88,8 +88,8 @@ def main():
                 time.sleep(600)                     # 10 minutes
                 continue
 
-            webcam_query['uuid'] = this_uuid
-            print('Grabbing webcam mp4 video and a jpg..., uuid=' + this_uuid)
+            webcam_query['uuid'] = this_uuid.__str__()
+            print('Requesting webcam mp4 video and a jpg from webcam-service, uuid=' + this_uuid)
             status_code, response_dict = call_rest_api.call_rest_api(definitions.webcam_service_endpoint_base + '/get_video', webcam_query)
 
             if response_dict['status'] != 'OK':
