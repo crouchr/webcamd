@@ -83,7 +83,7 @@ def main():
             cumulus_weather_info = get_cumulus_weather_info.get_key_weather_variables()     # REST API call
 
             _, solar, sky_condition = get_light_level(this_uuid)
-            if solar <= min_solar:                  # do not bother taking video if it is too dark
+            if solar < float(min_solar):                  # do not bother taking video if it is too dark
                 # print(time.ctime() + ' : light level is below ' + min_solar.__str__() + ' W, so sleeping... solar=' + solar.__str__())
                 time.sleep(600)                     # 10 minutes
                 continue
