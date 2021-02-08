@@ -6,3 +6,5 @@ webcam_service_endpoint_base = 'http://192.168.1.180:9504'
 # Which Twitter endpoint to talk to
 twitter_service_endpoint_base = 'http://192.168.1.180:9506'
 # twitter_service_endpoint_base = 'http://192.168.1.5:9506'
+
+cumulusmx_endpoint = 'http://192.168.1.180:8998/api/data/currentdata'

@@ -9,8 +9,7 @@ ENV PYTHONUNBUFFERED=1
 
 RUN apt -y update
 #RUN apt -y upgrade
-# RUN apt -y install python3-opencv joe x264 ffmpeg
-RUN apt -y install joe
+RUN apt -y install joe nmap
 
 # Install Python dependencies
 RUN pip3 install pipenv

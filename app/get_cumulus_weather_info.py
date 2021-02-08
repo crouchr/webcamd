@@ -1,4 +1,5 @@
 import call_rest_api
+import definitions
 from pprint import pprint
 
 
@@ -7,7 +8,7 @@ def get_key_weather_variables():
     Get some critical weather variables by querying the CumumlusMX REST API
     """
 
-    endpoint = 'http://192.168.1.180:8998/api/data/currentdata'
+    endpoint = definitions.cumulusmx_endpoint
 
     status_code, response_dict = call_rest_api.call_rest_api(endpoint, None)
     # print('status_code=' + status_code.__str__())

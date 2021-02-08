@@ -79,6 +79,7 @@ def main():
         print(my_app_name + ' started, version=' + version)
         print('webcam-service endpoint=' + definitions.webcam_service_endpoint_base)
         print('twitter-service endpoint=' + definitions.twitter_service_endpoint_base)
+        print('cumulusmx endpoint=' + definitions.cumulusmx_endpoint)
 
         while True:
             this_uuid = str(uuid.uuid4())          # unique uuid per cycle
