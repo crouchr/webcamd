@@ -52,8 +52,8 @@ def send_tweet(tweet_text, filename, uuid):
 
     # print('status_code=' + status_code.__str__())
     # pprint(response_dict)
-
-    if response_dict['status'] == 'OK' and response_dict['tweet_sent'] == True:
+    # if response_dict['status'] == 'OK' and response_dict['tweet_sent'] == True:
+    if response_dict['status'] == 'OK' :
         tweet_len = response_dict['tweet_len'].__str__()
         print('Tweet sent OK, tweet_len=' + tweet_len + ', uuid=' + uuid.__str__())
     else:
@@ -64,7 +64,7 @@ def main():
     try:
         crf = 19                                # H264 encoding quality parameter
         my_app_name = 'webcamd'
-
+        version = get_env.get_version()
         video_length_secs = get_env.get_video_length()
         preamble_secs = get_env.get_video_preamble()
         min_solar = get_env.get_min_solar()
@@ -75,7 +75,7 @@ def main():
         webcam_query['video_length_secs'] = video_length_secs
         webcam_query['preamble_secs'] = preamble_secs
 
-        print(my_app_name + ' started...')
+        print(my_app_name + ' started, version=' + version)
 
         while True:
             this_uuid = uuid.uuid4().__str__()          # unique uuid per cycle
