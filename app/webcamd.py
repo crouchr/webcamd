@@ -30,6 +30,8 @@ def get_light_level(uuid):
     sky_condition = response_dict['sky_condition']
     watts = round(response_dict['watts'], 2)
 
+    watts = 22222.2
+
     return int(lux), watts, sky_condition
 
 
@@ -46,9 +48,8 @@ def send_tweet(tweet_text, filename, uuid):
     query['lon'] = -1.3776                      # Stockcross
     query['video_pathname'] = filename
 
-    twitter_service_endpoint_base = 'http://192.168.1.180:9506'
-    twitter_service_endpoint_base = 'http://192.168.1.5:9506'
-    status_code, response_dict = call_rest_api.call_rest_api(twitter_service_endpoint_base + '/send_video', query)
+
+    status_code, response_dict = call_rest_api.call_rest_api(definitions.twitter_service_endpoint_base + '/send_video', query)
 
     # print('status_code=' + status_code.__str__())
     # pprint(response_dict)
@@ -76,9 +77,11 @@ def main():
         webcam_query['preamble_secs'] = preamble_secs
 
         print(my_app_name + ' started, version=' + version)
+        print('webcam-service endpoint=' + definitions.webcam_service_endpoint_base)
+        print('twitter-service endpoint=' + definitions.twitter_service_endpoint_base)
 
         while True:
-            this_uuid = uuid.uuid4().__str__()          # unique uuid per cycle
+            this_uuid = str(uuid.uuid4())          # unique uuid per cycle
 
             cumulus_weather_info = get_cumulus_weather_info.get_key_weather_variables()     # REST API call
 
@@ -89,7 +92,7 @@ def main():
                 continue
 
             webcam_query['uuid'] = this_uuid.__str__()
-            print('Requesting webcam mp4 video and a jpg from webcam-service, uuid=' + this_uuid)
+            print('Requesting webcam mp4 video and a jpg from webcam-service, uuid=' + this_uuid.__str__())
             status_code, response_dict = call_rest_api.call_rest_api(definitions.webcam_service_endpoint_base + '/get_video', webcam_query)
 
             if response_dict['status'] != 'OK':
