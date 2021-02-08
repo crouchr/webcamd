@@ -9,7 +9,8 @@ ENV PYTHONUNBUFFERED=1
 
 RUN apt -y update
 #RUN apt -y upgrade
-RUN apt -y install python3-opencv joe x264 ffmpeg
+# RUN apt -y install python3-opencv joe x264 ffmpeg
+RUN apt -y install joe
 
 # Install Python dependencies
 RUN pip3 install pipenv
@@ -23,5 +24,4 @@ WORKDIR /app
 #RUN echo date > /tmp/built.txt
 
 # run Python unbuffered so the logs are flushed
-CMD ["python3", "-u", "webcam_service.py"]
-
+CMD ["python3", "-u", "webcamd.py"]

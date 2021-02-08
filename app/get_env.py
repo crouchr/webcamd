@@ -17,7 +17,7 @@ def get_video_length():
     if 'VIDEO_SECS' in os.environ:
         video_length_secs = int(os.environ['VIDEO_SECS'])
     else:
-        video_length_secs = 5
+        video_length_secs = 20
         return video_length_secs
 
 

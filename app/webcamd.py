@@ -47,14 +47,17 @@ def send_tweet(tweet_text, filename, uuid):
     query['video_pathname'] = filename
 
     twitter_service_endpoint_base = 'http://192.168.1.180:9506'
+    twitter_service_endpoint_base = 'http://192.168.1.5:9506'
     status_code, response_dict = call_rest_api.call_rest_api(twitter_service_endpoint_base + '/send_video', query)
+
     # print('status_code=' + status_code.__str__())
     # pprint(response_dict)
 
-    if response_dict['tweet_sent'] == True:
-        print('Tweet sent OK, uuid=' + uuid.__str__())
+    if response_dict['status'] == 'OK' and response_dict['tweet_sent'] == True:
+        tweet_len = response_dict['tweet_len'].__str__()
+        print('Tweet sent OK, tweet_len=' + tweet_len + ', uuid=' + uuid.__str__())
     else:
-        print('Error : failed to send Tweet, uuid=' + uuid.__str__())
+        print(response_dict['status'])
 
 
 def main():
@@ -81,13 +84,20 @@ def main():
 
             _, solar, sky_condition = get_light_level(this_uuid)
             if solar <= min_solar:                  # do not bother taking video if it is too dark
-                print(time.ctime() + ' : light level is below ' + min_solar.__str__() + ' W, so sleeping... solar=' + solar.__str__())
+                # print(time.ctime() + ' : light level is below ' + min_solar.__str__() + ' W, so sleeping... solar=' + solar.__str__())
                 time.sleep(600)                     # 10 minutes
                 continue
 
             webcam_query['uuid'] = this_uuid
             print('Grabbing webcam mp4 video and a jpg..., uuid=' + this_uuid)
             status_code, response_dict = call_rest_api.call_rest_api(definitions.webcam_service_endpoint_base + '/get_video', webcam_query)
+
+            if response_dict['status'] != 'OK':
+                print(response_dict['status'] + ', sleeping for 2 mins...')
+                time.sleep(120)
+                continue    # go back to start of infinite loop
+
+            # Video/image grabbed OK
             mp4_filename = response_dict['video_filename']
             jpeg_filename = response_dict['jpeg_filename']
 
@@ -106,7 +116,7 @@ def main():
                 ', dew_point=' + cumulus_weather_info['OutdoorDewpoint'].__str__() + cumulus_weather_info['TempUnit'] + \
                 ', ' + cumulus_weather_info['DominantWindDirection'] + \
                 ', last_rain=' + cumulus_weather_info['LastRainTipISO'] + \
-                ', fcast=* ' + cumulus_weather_info['Forecast'] + ' *'\
+                ', fcast *' + cumulus_weather_info['Forecast'] + '*'\
                 ', solar=' + solar.__str__() + \
                 ' ' + filename
 
