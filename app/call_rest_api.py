@@ -12,11 +12,15 @@ def call_rest_api(endpoint, query):
     :param query: e.g. query = {'wind_deg': wind_deg}
     :return:
     """
+    try:
+        response = requests.get(endpoint, params=query)
+        if response.status_code != 200:
+            return 500, None
 
-    response = requests.get(endpoint, params=query)
-    if response.status_code != 200:
+        response_dict = json.loads(response.content.decode('utf-8'))
+
+        return response.status_code, response_dict
+
+    except Exception as e:
+        print('call_rest_api() : Error=' + e.__str__())
         return 500, None
-
-    response_dict = json.loads(response.content.decode('utf-8'))
-
-    return response.status_code, response_dict

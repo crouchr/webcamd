@@ -42,9 +42,23 @@ def get_min_solar():
     if 'MIN_SOLAR' in os.environ:
         min_solar = os.environ['MIN_SOLAR']     # a float
     else:
-        min_solar = 1.0
+        min_solar = 0.5
 
     return min_solar
+
+
+def get_max_solar():
+    """
+    Set maximum value of solar level to take video in (watts/metre-squared)
+    i.e. get reflections from window when curtains are closed
+    """
+
+    if 'MAX_SOLAR' in os.environ:
+        max_solar = os.environ['MAX_SOLAR']     # a float
+    else:
+        max_solar = 130.0
+
+    return max_solar
 
 
 def get_mins_between_videos():
@@ -55,6 +69,6 @@ def get_mins_between_videos():
     if 'MINS_BETWEEN_VIDEOS' in os.environ:
         mins_between_videos = int(os.environ['MINS_BETWEEN_VIDEOS'])
     else:
-        mins_between_videos = 15
+        mins_between_videos = 60    # was 15
 
     return mins_between_videos
