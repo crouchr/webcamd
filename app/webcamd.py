@@ -143,7 +143,6 @@ def main():
             else:
                 webcam_query['uuid'] = this_uuid.__str__()
                 print('Requesting webcam mp4 video and a jpg from webcam-service, uuid=' + this_uuid.__str__())
-                pprint(webcam_query)
                 status_code, response_dict = call_rest_api.call_rest_api(get_env.get_webcam_service_endpoint() + '/get_video', webcam_query)
                 pprint(response_dict)
 

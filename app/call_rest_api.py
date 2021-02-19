@@ -1,5 +1,6 @@
 import requests
 import json
+from pprint import pprint
 
 
 # FIXME : add retries, authentication etc in the future
@@ -13,6 +14,8 @@ def call_rest_api(endpoint, query):
     :return:
     """
     try:
+        print('call_rest_api() : endpoint=' + endpoint)
+        pprint(query)
         response = requests.get(endpoint, params=query)
         if response.status_code != 200:
             return 500, None
