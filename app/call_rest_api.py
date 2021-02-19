@@ -24,3 +24,4 @@ def call_rest_api(endpoint, query):
     except Exception as e:
         print('call_rest_api() : Error=' + e.__str__())
         return 500, None
+

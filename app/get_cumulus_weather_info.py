@@ -15,3 +15,4 @@ def get_key_weather_variables(cumulus_endpoint):
         return response_dict
     else:
         return None
+

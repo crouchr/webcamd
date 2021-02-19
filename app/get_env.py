@@ -108,3 +108,4 @@ def get_mins_between_videos():
         mins_between_videos = 60    # was 15
 
     return mins_between_videos
+
