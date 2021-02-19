@@ -12,6 +12,7 @@ import call_rest_api
 # import definitions
 import get_cumulus_weather_info
 import get_env
+import get_env_app
 
 # Add a bunch of reliability code to this before deploying
 
@@ -87,13 +88,14 @@ def main():
         crf = 19                                # H264 encoding quality parameter
         my_app_name = 'webcamd'
         version = get_env.get_version()
-        video_length_secs = get_env.get_video_length()
-        preamble_secs = get_env.get_video_preamble()
-        min_solar = get_env.get_min_solar()
-        max_solar = get_env.get_max_solar()
         cumulusmx_endpoint = get_env.get_cumulusmx_endpoint()
         webcam_service_endpoint = get_env.get_webcam_service_endpoint()
-        mins_between_videos = get_env.get_mins_between_videos()
+
+        video_length_secs = get_env_app.get_video_length()
+        preamble_secs = get_env_app.get_video_preamble()
+        min_solar = get_env_app.get_min_solar()
+        max_solar = get_env_app.get_max_solar()
+        mins_between_videos = get_env_app.get_mins_between_videos()
 
         webcam_query = {}                       # API call to webcam-service
         webcam_query['app_name'] = my_app_name
