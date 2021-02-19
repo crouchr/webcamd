@@ -9,7 +9,7 @@ import traceback
 from pprint import pprint
 
 import call_rest_api
-import definitions
+# import definitions
 import get_cumulus_weather_info
 import get_env
 
@@ -48,7 +48,7 @@ def send_tweet(tweet_text, uuid):
     query['lat'] = 51.4151                      # FIXME - put in definitions.py Stockcross
     query['lon'] = -1.3776                      # Stockcross
 
-    status_code, response_dict = call_rest_api.call_rest_api(definitions.twitter_service_endpoint_base + '/send_text', query)
+    status_code, response_dict = call_rest_api.call_rest_api(get_env.get_twitter_service_endpoint() + '/send_text', query)
 
     if response_dict['status'] == 'OK' :
         tweet_len = response_dict['tweet_len'].__str__()
@@ -70,7 +70,7 @@ def send_tweet_with_video(tweet_text, filename, uuid):
     query['lon'] = -1.3776                      # Stockcross
     query['video_pathname'] = filename
 
-    status_code, response_dict = call_rest_api.call_rest_api(definitions.twitter_service_endpoint_base + '/send_video', query)
+    status_code, response_dict = call_rest_api.call_rest_api(get_env.get_twitter_service_endpoint() + '/send_video', query)
 
     # print('status_code=' + status_code.__str__())
     # pprint(response_dict)
@@ -91,6 +91,8 @@ def main():
         preamble_secs = get_env.get_video_preamble()
         min_solar = get_env.get_min_solar()
         max_solar = get_env.get_max_solar()
+        cumulusmx_endpoint = get_env.get_cumulusmx_endpoint()
+        webcam_service_endpoint = get_env.get_webcam_service_endpoint()
         mins_between_videos = get_env.get_mins_between_videos()
 
         webcam_query = {}                       # API call to webcam-service
@@ -99,9 +101,10 @@ def main():
         webcam_query['preamble_secs'] = preamble_secs
 
         print(my_app_name + ' started, version=' + version)
-        print('webcam-service endpoint=' + definitions.webcam_service_endpoint_base)
-        print('twitter-service endpoint=' + definitions.twitter_service_endpoint_base)
-        print('cumulusmx endpoint=' + definitions.cumulusmx_endpoint)
+        print('stage=' + get_env.get_stage())
+        print('webcam-service endpoint=' + webcam_service_endpoint)
+        print('cumulusmx endpoint=' + cumulusmx_endpoint)
+        print('twitter-service endpoint=' + get_env.get_twitter_service_endpoint())
         print('min_solar=' + min_solar.__str__())
         print('max_solar=' + max_solar.__str__())
         print('mins_between_videos=' + mins_between_videos.__str__())
@@ -110,10 +113,10 @@ def main():
 
         print('enter main loop')
         while True:
-
+            print(time.ctime())
             this_uuid = str(uuid.uuid4())          # unique uuid per cycle
 
-            cumulus_weather_info = get_cumulus_weather_info.get_key_weather_variables()     # REST API call
+            cumulus_weather_info = get_cumulus_weather_info.get_key_weather_variables(cumulusmx_endpoint)     # REST API call
             # Tweet the video
             tweet_text = cumulus_weather_info['Beaufort'] + ' (max=' + cumulus_weather_info['HighBeaufortToday'] + ')' + \
                 ', cbase=' + cumulus_weather_info['Cloudbase'].__str__() + ' ' + cumulus_weather_info['CloudbaseUnit'] + \
@@ -139,7 +142,7 @@ def main():
                 webcam_query['uuid'] = this_uuid.__str__()
                 print('Requesting webcam mp4 video and a jpg from webcam-service, uuid=' + this_uuid.__str__())
                 pprint(webcam_query)
-                status_code, response_dict = call_rest_api.call_rest_api(definitions.webcam_service_endpoint_base + '/get_video', webcam_query)
+                status_code, response_dict = call_rest_api.call_rest_api(get_env.get_webcam_service_endpoint() + '/get_video', webcam_query)
                 pprint(response_dict)
 
                 if response_dict['status'] != 'OK':

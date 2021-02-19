@@ -1,16 +1,13 @@
 import call_rest_api
-import definitions
 from pprint import pprint
 
 
-def get_key_weather_variables():
+def get_key_weather_variables(cumulus_endpoint):
     """
-    Get some critical weather variables by querying the CumumlusMX REST API
+    Get some critical weather variables by querying the CumulusMX REST API
     """
 
-    endpoint = definitions.cumulusmx_endpoint
-
-    status_code, response_dict = call_rest_api.call_rest_api(endpoint, None)
+    status_code, response_dict = call_rest_api.call_rest_api(cumulus_endpoint, None)
     # print('status_code=' + status_code.__str__())
     #pprint(response_dict)
 

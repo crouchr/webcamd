@@ -10,6 +10,42 @@ def get_version():
     return version
 
 
+def get_stage():
+    if 'STAGE' in os.environ:
+        stage = os.environ['STAGE']
+    else:
+        stage = 'DEV'   # i.e. running in PyCharm
+
+    return stage
+
+
+def get_webcam_service_endpoint():
+    if 'STAGE' in os.environ and os.environ['STAGE'] == 'PRD':
+        webcam_service_endpoint_base = 'http://webcam-service:9504'
+    else:
+        webcam_service_endpoint_base = 'http://192.168.1.180:9504'
+
+    return webcam_service_endpoint_base
+
+
+def get_twitter_service_endpoint():
+    if 'STAGE' in os.environ and os.environ['STAGE'] == 'PRD':
+        twitter_service_endpoint_base = 'http://webcam-service:9506'
+    else:
+        twitter_service_endpoint_base = 'http://192.168.1.180:9506'
+
+    return twitter_service_endpoint_base
+
+
+def get_cumulusmx_endpoint():
+    if 'STAGE' in os.environ and os.environ['STAGE'] == 'PRD':
+        cumulusmx_endpoint = 'http://cumulusmx:8998/api/data/currentdata'
+    else:
+        cumulusmx_endpoint = 'http://192.168.1.180:8998/api/data/currentdata'
+
+    return cumulusmx_endpoint
+
+
 def get_video_length():
     """
     Set webcam video duration in Docker Compose ENV

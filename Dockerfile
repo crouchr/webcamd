@@ -2,7 +2,7 @@
 # based on Debian Buster
 FROM python:3.8.5-buster
 LABEL author="Richard Crouch"
-LABEL description="Webcam Service"
+LABEL description="Webcamd Daemon"
 
 # generate logs in unbuffered mode
 ENV PYTHONUNBUFFERED=1
