@@ -13,6 +13,19 @@ def get_version():
     return version
 
 
+def get_verbose():
+    if 'VERBOSE' in os.environ:
+        verbose = os.environ['VERBOSE']
+        if verbose == 'True':
+            verbose = True
+        else:
+            verbose = False
+    else:
+        verbose = False
+
+    return verbose
+
+
 def get_stage():
     if 'STAGE' in os.environ:
         stage = os.environ['STAGE']
@@ -47,3 +60,12 @@ def get_cumulusmx_endpoint():
         cumulusmx_endpoint = 'http://192.168.1.180:8998/api/data/currentdata'
 
     return cumulusmx_endpoint
+
+# Not needed but trying to have a common file
+# def get_telegraf_endpoint():
+#     if 'TELEGRAF_ENDPOINT' in os.environ:
+#         telegraf_endpoint = os.environ['TELEGRAF_ENDPOINT']
+#     else:
+#         telegraf_endpoint = '192.168.1.180'
+
+    return telegraf_endpoint

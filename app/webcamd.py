@@ -8,6 +8,10 @@ import uuid
 import traceback
 from pprint import pprint
 
+# artifacts
+import wet_bulb
+import synopsis
+
 import call_rest_api
 # import definitions
 import get_cumulus_weather_info
@@ -88,6 +92,8 @@ def main():
         crf = 19                                # H264 encoding quality parameter
         my_app_name = 'webcamd'
         version = get_env.get_version()
+        verbose = get_env.get_verbose()
+        stage = get_env.get_stage()
         cumulusmx_endpoint = get_env.get_cumulusmx_endpoint()
         webcam_service_endpoint = get_env.get_webcam_service_endpoint()
 
@@ -103,7 +109,10 @@ def main():
         webcam_query['preamble_secs'] = preamble_secs
 
         print(my_app_name + ' started, version=' + version)
-        print('stage=' + get_env.get_stage())
+        print('stage=' + stage)
+        if stage == 'DEV':
+            verbose = True
+        print('verbose=' + verbose.__str__())
         print('webcam-service endpoint=' + webcam_service_endpoint)
         print('cumulusmx endpoint=' + cumulusmx_endpoint)
         print('twitter-service endpoint=' + get_env.get_twitter_service_endpoint())
@@ -119,20 +128,34 @@ def main():
             this_uuid = str(uuid.uuid4())          # unique uuid per cycle
 
             cumulus_weather_info = get_cumulus_weather_info.get_key_weather_variables(cumulusmx_endpoint)     # REST API call
+            temp_c = float(cumulus_weather_info['OutdoorTemp'])
+            pressure = float(cumulus_weather_info['Pressure'])
+            dew_point_c = float(cumulus_weather_info['OutdoorDewpoint'])
+            wet_bulb_c = wet_bulb.get_wet_bulb(temp_c, pressure, dew_point_c)
+            rain_rate = float(cumulus_weather_info['RainRate'])
+            wind_knots_2m = float(cumulus_weather_info['WindAverage'])
+
+            synopsis_code, synopsis_text = synopsis.get_synopsis(temp_c, wet_bulb_c, dew_point_c, rain_rate,
+                                                                 wind_knots_2m)
+
             # Tweet the video
-            tweet_text = cumulus_weather_info['Beaufort'] + ' (max=' + cumulus_weather_info['HighBeaufortToday'] + ')' + \
+            tweet_text = ' wmo4680=' + synopsis_code.__str__() + ' (' + synopsis_text + ')' + \
+                ', fcast *' + cumulus_weather_info['Forecast'] + '*' + \
+                ', wind_chill=' + cumulus_weather_info['WindChill'].__str__() + cumulus_weather_info['TempUnit'] + \
+                ', wind=' + cumulus_weather_info['Beaufort'].__str__() + \
+                ' (max=' + cumulus_weather_info['HighBeaufortToday'].__str__() + ')' + \
+                ', ' + cumulus_weather_info['DominantWindDirection'] + \
                 ', cbase=' + cumulus_weather_info['Cloudbase'].__str__() + ' ' + cumulus_weather_info['CloudbaseUnit'] + \
                 ', ' + cumulus_weather_info['Pressure'].__str__() + ' ' + cumulus_weather_info['PressUnit'] + \
                 ', trend=' + cumulus_weather_info['PressTrend'].__str__() + \
                 ', temp=' + cumulus_weather_info['OutdoorTemp'].__str__() + cumulus_weather_info['TempUnit'] + \
-                ', wind_chill=' + cumulus_weather_info['WindChill'].__str__() + cumulus_weather_info['TempUnit'] + \
+                ', wet_bulb=' + wet_bulb_c.__str__() + cumulus_weather_info['TempUnit'] + \
                 ', dew_point=' + cumulus_weather_info['OutdoorDewpoint'].__str__() + cumulus_weather_info['TempUnit'] + \
-                ', ' + cumulus_weather_info['DominantWindDirection'] + \
                 ', last_rain=' + cumulus_weather_info['LastRainTipISO'] + \
                 ', rain_rate=' + cumulus_weather_info['RainRate'].__str__() + \
                 ', rain_today_mm=' + cumulus_weather_info['RainToday'].__str__() + \
-                ', fcast *' + cumulus_weather_info['Forecast'] + '*'\
                 ', solar=' + cumulus_weather_info['SolarRad'].__str__()
+
             print(tweet_text)
 
             solar = cumulus_weather_info['SolarRad']

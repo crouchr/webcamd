@@ -1,3 +1,4 @@
+# This needs to be added to a library
 import requests
 import json
 from pprint import pprint
@@ -15,7 +16,8 @@ def call_rest_api(endpoint, query):
     """
     try:
         print('call_rest_api() : endpoint=' + endpoint)
-        pprint(query)
+        if query is not None:
+            pprint(query.__str__())
         response = requests.get(endpoint, params=query)
         if response.status_code != 200:
             return 500, None
