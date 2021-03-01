@@ -140,7 +140,7 @@ def main():
                                                                  wind_knots_2m, solar)
             # ' wmo4680=' + synopsis_code.__str__() + ' (' + synopsis_text + ')' + \
             # Tweet the video
-            tweet_text = ' Stockcross, UK : fcast *' + cumulus_weather_info['Forecast'] + '*' + \
+            tweet_text = ' fcast *' + cumulus_weather_info['Forecast'] + '*' + \
                 ', wind_chill=' + cumulus_weather_info['WindChill'].__str__() + cumulus_weather_info['TempUnit'] + \
                 ', wind=' + cumulus_weather_info['Beaufort'].__str__() + \
                 ' (max=' + cumulus_weather_info['HighBeaufortToday'].__str__() + ')' + \
@@ -156,7 +156,7 @@ def main():
                 ', rain_today=' + cumulus_weather_info['RainToday'].__str__()
                 # ', solar=' + cumulus_weather_info['SolarRad'].__str__()
 
-            tweet_text = ' fcast *' + cumulus_weather_info['Forecast'] + '*' + \
+            tweet_text = ' Stockcross, UK : fcast *' + cumulus_weather_info['Forecast'] + '*' + \
                          ', wmo4680=' + synopsis_code.__str__() + ' (' + synopsis_text + ')' + \
                          ', solar=' + solar.__str__()
 
