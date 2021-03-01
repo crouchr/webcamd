@@ -134,13 +134,13 @@ def main():
             wet_bulb_c = wet_bulb.get_wet_bulb(temp_c, pressure, dew_point_c)
             rain_rate = float(cumulus_weather_info['RainRate'])
             wind_knots_2m = float(cumulus_weather_info['WindAverage'])
+            solar = cumulus_weather_info['SolarRad']
 
             synopsis_code, synopsis_text = synopsis.get_synopsis(temp_c, wet_bulb_c, dew_point_c, rain_rate,
                                                                  wind_knots_2m)
-
+            # ' wmo4680=' + synopsis_code.__str__() + ' (' + synopsis_text + ')' + \
             # Tweet the video
-            tweet_text = ' wmo4680=' + synopsis_code.__str__() + ' (' + synopsis_text + ')' + \
-                ', fcast *' + cumulus_weather_info['Forecast'] + '*' + \
+            tweet_text = ' fcast *' + cumulus_weather_info['Forecast'] + '*' + \
                 ', wind_chill=' + cumulus_weather_info['WindChill'].__str__() + cumulus_weather_info['TempUnit'] + \
                 ', wind=' + cumulus_weather_info['Beaufort'].__str__() + \
                 ' (max=' + cumulus_weather_info['HighBeaufortToday'].__str__() + ')' + \
@@ -149,17 +149,21 @@ def main():
                 ', ' + cumulus_weather_info['Pressure'].__str__() + ' ' + cumulus_weather_info['PressUnit'] + \
                 ', trend=' + cumulus_weather_info['PressTrend'].__str__() + \
                 ', temp=' + cumulus_weather_info['OutdoorTemp'].__str__() + cumulus_weather_info['TempUnit'] + \
-                ', wet_bulb=' + wet_bulb_c.__str__() + cumulus_weather_info['TempUnit'] + \
-                ', dew_point=' + cumulus_weather_info['OutdoorDewpoint'].__str__() + cumulus_weather_info['TempUnit'] + \
+                ', Twb=' + wet_bulb_c.__str__() + cumulus_weather_info['TempUnit'] + \
+                ', Tdp=' + cumulus_weather_info['OutdoorDewpoint'].__str__() + cumulus_weather_info['TempUnit'] + \
                 ', last_rain=' + cumulus_weather_info['LastRainTipISO'] + \
                 ', rain_rate=' + cumulus_weather_info['RainRate'].__str__() + \
-                ', rain_today_mm=' + cumulus_weather_info['RainToday'].__str__() + \
-                ', solar=' + cumulus_weather_info['SolarRad'].__str__()
+                ', rain_today=' + cumulus_weather_info['RainToday'].__str__()
+                # ', solar=' + cumulus_weather_info['SolarRad'].__str__()
+
+            tweet_text = ' fcast *' + cumulus_weather_info['Forecast'] + '*' + \
+                         ', wmo4680=' + synopsis_code.__str__() + ' (' + synopsis_text + ')' + \
+                         ', solar=' + solar.__str__()
+
 
             print(tweet_text)
 
-            solar = cumulus_weather_info['SolarRad']
-            # _, solar, sky_condition = get_light_level(this_uuid)
+
             if solar < float(min_solar) or solar > float(max_solar):                  # do not bother taking video if it is too dark
                 # print(time.ctime() + ' : light level is below ' + min_solar.__str__() + ' W, so sleeping... solar=' + solar.__str__())
                 send_tweet(tweet_text, this_uuid)
