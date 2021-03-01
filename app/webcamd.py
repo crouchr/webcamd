@@ -137,10 +137,10 @@ def main():
             solar = cumulus_weather_info['SolarRad']
 
             synopsis_code, synopsis_text = synopsis.get_synopsis(temp_c, wet_bulb_c, dew_point_c, rain_rate,
-                                                                 wind_knots_2m)
+                                                                 wind_knots_2m, solar)
             # ' wmo4680=' + synopsis_code.__str__() + ' (' + synopsis_text + ')' + \
             # Tweet the video
-            tweet_text = ' fcast *' + cumulus_weather_info['Forecast'] + '*' + \
+            tweet_text = ' Stockcross, UK : fcast *' + cumulus_weather_info['Forecast'] + '*' + \
                 ', wind_chill=' + cumulus_weather_info['WindChill'].__str__() + cumulus_weather_info['TempUnit'] + \
                 ', wind=' + cumulus_weather_info['Beaufort'].__str__() + \
                 ' (max=' + cumulus_weather_info['HighBeaufortToday'].__str__() + ')' + \
