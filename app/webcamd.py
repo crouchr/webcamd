@@ -48,46 +48,54 @@ def send_tweet(tweet_text, uuid):
     """
     Send a Tweet - i.e. not enough light etc, so just send the met info
     """
-    query = {}                                  # API call to twitter-service
-    query['app_name'] = 'webcamd'
-    query['uuid'] = uuid
-    query['tweet_text'] = tweet_text
-    query['hashtag_arg'] = 'metminiwx'          # do not supply the #
-    query['lat'] = 51.4151                      # FIXME - put in definitions.py Stockcross
-    query['lon'] = -1.3776                      # Stockcross
+    try:
+        query = {}                                  # API call to twitter-service
+        query['app_name'] = 'webcamd'
+        query['uuid'] = uuid
+        query['tweet_text'] = tweet_text
+        query['hashtag_arg'] = 'metminiwx'          # do not supply the #
+        query['lat'] = 51.4151                      # FIXME - put in definitions.py Stockcross
+        query['lon'] = -1.3776                      # Stockcross
 
-    status_code, response_dict = cumulus_comms.call_rest_api(get_env.get_twitter_service_endpoint() + '/send_text', query)
+        status_code, response_dict = cumulus_comms.call_rest_api(get_env.get_twitter_service_endpoint() + '/send_text', query)
 
-    if response_dict['status'] == 'OK' :
-        tweet_len = response_dict['tweet_len'].__str__()
-        print('Tweet sent OK, tweet_len=' + tweet_len + ', uuid=' + uuid.__str__())
-    else:
-        print(response_dict['status'])
+        if response_dict['status'] == 'OK' :
+            tweet_len = response_dict['tweet_len'].__str__()
+            print('Tweet sent OK, tweet_len=' + tweet_len + ', uuid=' + uuid.__str__())
+        else:
+            print(response_dict['status'])
+
+    except Exception as e:
+        print('Error : ' + e.__str__())
 
 
 def send_tweet_with_video(tweet_text, filename, uuid):
     """
     Send a Tweet with a video file
     """
-    query = {}                                  # API call to twitter-service
-    query['app_name'] = 'webcamd'
-    query['uuid'] = uuid
-    query['tweet_text'] = tweet_text
-    query['hashtag_arg'] = 'metminiwx'          # do not supply the #
-    query['lat'] = 51.4151                      # Stockcross
-    query['lon'] = -1.3776                      # Stockcross
-    query['video_pathname'] = filename
+    try:
+        query = {}                                  # API call to twitter-service
+        query['app_name'] = 'webcamd'
+        query['uuid'] = uuid
+        query['tweet_text'] = tweet_text
+        query['hashtag_arg'] = 'metminiwx'          # do not supply the #
+        query['lat'] = 51.4151                      # Stockcross
+        query['lon'] = -1.3776                      # Stockcross
+        query['video_pathname'] = filename
 
-    status_code, response_dict = cumulus_comms.call_rest_api(get_env.get_twitter_service_endpoint() + '/send_video', query)
+        status_code, response_dict = cumulus_comms.call_rest_api(get_env.get_twitter_service_endpoint() + '/send_video', query)
 
-    # print('status_code=' + status_code.__str__())
-    # pprint(response_dict)
-    # if response_dict['status'] == 'OK' and response_dict['tweet_sent'] == True:
-    if response_dict['status'] == 'OK' :
-        tweet_len = response_dict['tweet_len'].__str__()
-        print('Tweet sent OK, tweet_len=' + tweet_len + ', uuid=' + uuid.__str__())
-    else:
-        print(response_dict['status'])
+        # print('status_code=' + status_code.__str__())
+        # pprint(response_dict)
+        # if response_dict['status'] == 'OK' and response_dict['tweet_sent'] == True:
+        if response_dict['status'] == 'OK' :
+            tweet_len = response_dict['tweet_len'].__str__()
+            print('Tweet sent OK, tweet_len=' + tweet_len + ', uuid=' + uuid.__str__())
+        else:
+            print(response_dict['status'])
+
+    except Exception as e:
+        print('Error : ' + e.__str__())
 
 
 def main():
@@ -208,9 +216,13 @@ def main():
                     print('wrote webcam video to : ' + mp4_filename.__str__() + ', uuid=' + this_uuid)
                     print('wrote webcam jpeg to  : ' + jpeg_filename.__str__() + ', uuid=' + this_uuid)
 
-                    filename = mp4_filename.split('/')[-1]          # ignore the filepath
-                    tweet_text = tweet_text + ' ' + filename
-                    send_tweet_with_video(tweet_text, mp4_filename, this_uuid)
+                    if '/' in mp4_filename:
+                        filename = mp4_filename.split('/')[-1]          # ignore the filepath
+                        tweet_text = tweet_text + ' ' + filename
+                        send_tweet_with_video(tweet_text, mp4_filename, this_uuid)
+                    else:
+                        print('Error : mp4_filename=' + mp4_filename.__str__())
+                        raise()
 
             except Exception as e:
                 print('Error in main loop : ' + e.__str__())

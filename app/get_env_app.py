@@ -35,7 +35,7 @@ def get_min_solar():
     if 'MIN_SOLAR' in os.environ:
         min_solar = os.environ['MIN_SOLAR']     # a float
     else:
-        min_solar = 0.5
+        min_solar = 1.0
 
     return min_solar
 
