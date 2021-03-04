@@ -180,7 +180,8 @@ def main():
             tweet_text = ' Stockcross, UK : fcast *' + cumulus_weather_info['Forecast'] + '*' + \
                          ', wmo4680=' + synopsis_code.__str__() + ' (' + synopsis_text + ')' + \
                          ', solar=' + solar.__str__() + \
-                         ', okta=' + okta_text
+                         ', okta=' + okta.__str__() + ' (' + okta_text + ')'
+
 
 
             print(tweet_text)
