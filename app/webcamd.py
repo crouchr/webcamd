@@ -128,40 +128,44 @@ def main():
         print('preamble_secs=' + preamble_secs.__str__())
         print('video_length_secs=' + video_length_secs.__str__())
 
-        print('enter main loop')
+        print('entering main loop...')
         while True:
-            print(time.ctime())
+            print(time.ctime() + ' : top of loop')
             this_uuid = str(uuid.uuid4())          # unique uuid per cycle
+            try:
+                cumulus_weather_info = get_cumulus_weather_info.get_key_weather_variables(cumulusmx_endpoint)     # REST API call
+                if cumulus_weather_info is None:
+                    print('Error: CumulusMX did not return valid data')
+                    cumulus_comms.wait_until_cumulus_data_ok(cumulusmx_endpoint)             # loop until CumulusMX data is OK
+                    continue                                                                # resume at the while()
 
-            cumulus_weather_info = get_cumulus_weather_info.get_key_weather_variables(cumulusmx_endpoint)     # REST API call
-            if cumulus_weather_info is None:
-                print('Error: CumulusMX did not return valid data')
-                cumulus_comms.wait_until_cumulus_data_ok(cumulusmx_endpoint)             # loop until CumulusMX data is OK
-                continue                                                                # resume at the while()
+                temp_c = float(cumulus_weather_info['OutdoorTemp'])
+                pressure = float(cumulus_weather_info['Pressure'])
+                dew_point_c = float(cumulus_weather_info['OutdoorDewpoint'])
+                wet_bulb_c = wet_bulb.get_wet_bulb(temp_c, pressure, dew_point_c)
+                rain_rate = float(cumulus_weather_info['RainRate'])
+                wind_knots_2m = float(cumulus_weather_info['WindAverage'])
+                solar = cumulus_weather_info['SolarRad']
 
-            temp_c = float(cumulus_weather_info['OutdoorTemp'])
-            pressure = float(cumulus_weather_info['Pressure'])
-            dew_point_c = float(cumulus_weather_info['OutdoorDewpoint'])
-            wet_bulb_c = wet_bulb.get_wet_bulb(temp_c, pressure, dew_point_c)
-            rain_rate = float(cumulus_weather_info['RainRate'])
-            wind_knots_2m = float(cumulus_weather_info['WindAverage'])
-            solar = cumulus_weather_info['SolarRad']
+                # common code with synopsisd
+                altitude_deg = solar_rad_expected.calc_altitude(lat, lon)
+                solar_radiation_theoretical = solar_rad_expected.get_solar_radiation_theoretical(altitude_deg)
 
-            # common code with synopsisd
-            altitude_deg = solar_rad_expected.calc_altitude(lat, lon)
-            solar_radiation_theoretical = solar_rad_expected.get_solar_radiation_theoretical(altitude_deg)
-
-            # derived cloud coverage estimate
-            cloud_coverage_percent = solar_rad_expected.calc_cloud_coverage(solar, solar_radiation_theoretical)
-            okta = okta_funcs.coverage_to_okta(cloud_coverage_percent)
-            okta_text = okta_funcs.convert_okta_to_cloud_cover(okta)[0]
-
-
-            synopsis_code, synopsis_text = synopsis.get_synopsis(temp_c, wet_bulb_c, dew_point_c, rain_rate,
+                synopsis_code, synopsis_text = synopsis.get_synopsis(temp_c, wet_bulb_c, dew_point_c, rain_rate,
                                                                  wind_knots_2m, solar)
-            # ' wmo4680=' + synopsis_code.__str__() + ' (' + synopsis_text + ')' + \
-            # Tweet the video
-            tweet_text = ' fcast *' + cumulus_weather_info['Forecast'] + '*' + \
+                if 'fog' in synopsis_text:
+                    is_fog = True
+                else:
+                    is_fog = False
+
+                # derived cloud coverage estimate
+                cloud_coverage_percent = solar_rad_expected.calc_cloud_coverage(lat, lon, solar, solar_radiation_theoretical)
+                okta = okta_funcs.coverage_to_okta(cloud_coverage_percent, is_fog)
+                okta_text = okta_funcs.convert_okta_to_cloud_cover(okta)[0]
+
+                # ' wmo4680=' + synopsis_code.__str__() + ' (' + synopsis_text + ')' + \
+                # Tweet the video
+                tweet_text = ' fcast *' + cumulus_weather_info['Forecast'] + '*' + \
                 ', wind_chill=' + cumulus_weather_info['WindChill'].__str__() + cumulus_weather_info['TempUnit'] + \
                 ', wind=' + cumulus_weather_info['Beaufort'].__str__() + \
                 ' (max=' + cumulus_weather_info['HighBeaufortToday'].__str__() + ')' + \
@@ -177,47 +181,54 @@ def main():
                 ', rain_today=' + cumulus_weather_info['RainToday'].__str__()
                 # ', solar=' + cumulus_weather_info['SolarRad'].__str__()
 
-            tweet_text = ' Stockcross, UK : fcast *' + cumulus_weather_info['Forecast'] + '*' + \
+                tweet_text = ' Stockcross, UK : fcast *' + cumulus_weather_info['Forecast'] + '*' + \
                          ', wmo4680=' + synopsis_code.__str__() + ' (' + synopsis_text + ')' + \
+                         ', temp=' + temp_c.__str__() + \
                          ', solar=' + solar.__str__() + \
                          ', okta=' + okta.__str__() + ' (' + okta_text + ')'
+                print(tweet_text)
 
+                solar = 80
+                if solar < float(min_solar) or solar > float(max_solar):                  # do not bother taking video if it is too dark
+                    send_tweet(tweet_text, this_uuid)
+                else:
+                    webcam_query['uuid'] = this_uuid.__str__()
+                    print('Requesting webcam mp4 video and a jpg from webcam-service, uuid=' + this_uuid.__str__() + ' ...')
+                    status_code, response_dict = cumulus_comms.call_rest_api(get_env.get_webcam_service_endpoint() + '/get_video', webcam_query)
+                    pprint(response_dict)
 
+                    # if response_dict['status'] != 'OK':
+                    #     print(response_dict['status'] + ', sleeping for 2 mins...')
+                    #     time.sleep(120)
+                    #     continue    # go back to start of infinite loop
 
-            print(tweet_text)
+                    # Video/image grabbed OK
+                    mp4_filename = response_dict['video_filename']
+                    jpeg_filename = response_dict['jpeg_filename']
 
+                    print('wrote webcam video to : ' + mp4_filename + ', uuid=' + this_uuid)
+                    print('wrote webcam jpeg to  : ' + jpeg_filename + ', uuid=' + this_uuid)
 
-            if solar < float(min_solar) or solar > float(max_solar):                  # do not bother taking video if it is too dark
-                # print(time.ctime() + ' : light level is below ' + min_solar.__str__() + ' W, so sleeping... solar=' + solar.__str__())
-                send_tweet(tweet_text, this_uuid)
-            else:
-                webcam_query['uuid'] = this_uuid.__str__()
-                print('Requesting webcam mp4 video and a jpg from webcam-service, uuid=' + this_uuid.__str__())
-                status_code, response_dict = cumulus_comms.call_rest_api(get_env.get_webcam_service_endpoint() + '/get_video', webcam_query)
+                    filename = mp4_filename.split('/')[-1]          # ignore the filepath
+                    tweet_text = tweet_text + ' ' + filename
+                    send_tweet_with_video(tweet_text, mp4_filename, this_uuid)
+
+            except Exception as e:
+                print('Error in main loop : ' + e.__str__())
+                print('status_code=' + status_code.__str__())
                 pprint(response_dict)
-
-                if response_dict['status'] != 'OK':
-                    print(response_dict['status'] + ', sleeping for 2 mins...')
-                    time.sleep(120)
-                    continue    # go back to start of infinite loop
-
-                # Video/image grabbed OK
-                mp4_filename = response_dict['video_filename']
-                jpeg_filename = response_dict['jpeg_filename']
-
-                print('wrote webcam video to : ' + mp4_filename + ', uuid=' + this_uuid)
-                print('wrote webcam jpeg to  : ' + jpeg_filename + ', uuid=' + this_uuid)
-
-                filename = mp4_filename.split('/')[-1]      # ignore the filepath
-                tweet_text = tweet_text + ' ' + filename
-                send_tweet_with_video(tweet_text, mp4_filename, this_uuid)
+                print('Backoff sleeping...')
+                time.sleep(5 * 60)
+                print('back to top of loop')
+                continue            # just have another attempt...
 
             sleep_secs = mins_between_videos * 60
             print('----------------------------------------------')
-            print(time.ctime() + ' sleeping for ' + sleep_secs.__str__() + ' seconds...')
+            print(time.ctime() + ' : sleeping for ' + sleep_secs.__str__() + ' seconds...')
             time.sleep(sleep_secs)
 
     except Exception as e:
+        print('Fatal error : ' + e.__str__())
         traceback.print_exc()
 
 
