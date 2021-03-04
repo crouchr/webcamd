@@ -188,7 +188,6 @@ def main():
                          ', okta=' + okta.__str__() + ' (' + okta_text + ')'
                 print(tweet_text)
 
-                solar = 80
                 if solar < float(min_solar) or solar > float(max_solar):                  # do not bother taking video if it is too dark
                     send_tweet(tweet_text, this_uuid)
                 else:
