@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d287a7c5e104b8c8e2422ea3518fbd79290deaefd4d3fe0401dd62f35eed4146"
+            "sha256": "1ee19a7598988ba3c26e1781eaa8ad25582068e846d109703e54fd0b1757b53f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -169,11 +169,11 @@
         },
         "metrestapi": {
             "hashes": [
-                "sha256:f6d5f8cdb0198df68ff7a9c131a07ecb96b0e9af18e498167f934afc38464f39",
-                "sha256:f78d003832fefa67f41ab4aa755fb7e91e47fc75bd0f9a3700f7ea2583ba259b"
+                "sha256:2aec3978c928fde168fb12f5cafc2bfe3df0e6db6805890f017a00cf1b968863",
+                "sha256:81826aea457a40047368a1f9e73718856317f70b04a793659d16a8846b87cd5c"
             ],
             "index": "ermin",
-            "version": "==1.0.2"
+            "version": "==1.0.5"
         },
         "numpy": {
             "hashes": [

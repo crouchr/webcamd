@@ -13,7 +13,6 @@ import wet_bulb
 import synopsis
 
 import cumulus_comms
-import call_rest_api
 
 # import definitions
 import get_cumulus_weather_info
