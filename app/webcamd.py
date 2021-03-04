@@ -12,11 +12,14 @@ from pprint import pprint
 import wet_bulb
 import synopsis
 
+import cumulus_comms
 import call_rest_api
+
 # import definitions
 import get_cumulus_weather_info
 import get_env
 import get_env_app
+
 
 # Add a bunch of reliability code to this before deploying
 
@@ -87,6 +90,9 @@ def send_tweet_with_video(tweet_text, filename, uuid):
         print(response_dict['status'])
 
 
+
+
+
 def main():
     try:
         crf = 19                                # H264 encoding quality parameter
@@ -128,6 +134,11 @@ def main():
             this_uuid = str(uuid.uuid4())          # unique uuid per cycle
 
             cumulus_weather_info = get_cumulus_weather_info.get_key_weather_variables(cumulusmx_endpoint)     # REST API call
+            if cumulus_weather_info is None:
+                print('Error: CumulusMX did not return valid data')
+                cumulus_comms.wait_until_cumulus_data_ok(cumulusmx_endpoint)             # loop until CumulusMX data is OK
+                continue                                                                # resume at the while()
+
             temp_c = float(cumulus_weather_info['OutdoorTemp'])
             pressure = float(cumulus_weather_info['Pressure'])
             dew_point_c = float(cumulus_weather_info['OutdoorDewpoint'])

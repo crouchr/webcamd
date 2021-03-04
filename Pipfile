@@ -10,10 +10,12 @@ name = "ermin"
 
 [packages]
 requests = "==2.25.1"
-metfuncs = {version="1.0.16", index="ermin"}
+metfuncs = {version="1.0.21", index="ermin"}
+metrestapi = {version="1.0.2", index="ermin"}
 metpy = "==1.0"
 
 [dev-packages]
 
 [requires]
 python_version = "3.7"
+
