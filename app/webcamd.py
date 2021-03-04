@@ -205,8 +205,8 @@ def main():
                     mp4_filename = response_dict['video_filename']
                     jpeg_filename = response_dict['jpeg_filename']
 
-                    print('wrote webcam video to : ' + mp4_filename + ', uuid=' + this_uuid)
-                    print('wrote webcam jpeg to  : ' + jpeg_filename + ', uuid=' + this_uuid)
+                    print('wrote webcam video to : ' + mp4_filename.__str__() + ', uuid=' + this_uuid)
+                    print('wrote webcam jpeg to  : ' + jpeg_filename.__str__() + ', uuid=' + this_uuid)
 
                     filename = mp4_filename.split('/')[-1]          # ignore the filepath
                     tweet_text = tweet_text + ' ' + filename
