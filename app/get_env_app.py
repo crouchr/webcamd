@@ -10,7 +10,7 @@ def get_video_length():
         video_length_secs = int(os.environ['VIDEO_SECS'])
     else:
         video_length_secs = 20
-        return video_length_secs
+    return video_length_secs
 
 
 def get_video_preamble():
