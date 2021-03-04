@@ -12,7 +12,7 @@ RUN apt -y update
 RUN apt -y install joe nmap
 
 # Install Python dependencies
-RUN pip3 install --upgrade pip3
+RUN pip install --upgrade pip3
 RUN pip3 install pipenv
 COPY Pipfile* ./
 RUN pipenv install --system --deploy
