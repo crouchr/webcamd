@@ -46,7 +46,7 @@ def get_webcam_service_endpoint():
 
 def get_twitter_service_endpoint():
     if 'STAGE' in os.environ and os.environ['STAGE'] == 'PRD':
-        twitter_service_endpoint_base = 'http://webcam-service:9506'
+        twitter_service_endpoint_base = 'http://twitter-service:9506'
     else:
         twitter_service_endpoint_base = 'http://192.168.1.180:9506'
 
