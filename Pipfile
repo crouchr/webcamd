@@ -13,9 +13,9 @@ requests = "==2.25.1"
 metfuncs = {version="1.0.21", index="ermin"}
 metrestapi = {version="1.0.5", index="ermin"}
 metpy = "==1.0"
+pysolar = "==0.9"
 
 [dev-packages]
 
 [requires]
 python_version = "3.7"
-

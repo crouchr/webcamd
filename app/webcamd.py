@@ -11,7 +11,8 @@ from pprint import pprint
 # artifacts
 import wet_bulb
 import synopsis
-
+import solar_rad_expected
+import okta_funcs
 import cumulus_comms
 
 # import definitions
@@ -55,7 +56,7 @@ def send_tweet(tweet_text, uuid):
     query['lat'] = 51.4151                      # FIXME - put in definitions.py Stockcross
     query['lon'] = -1.3776                      # Stockcross
 
-    status_code, response_dict = call_rest_api.call_rest_api(get_env.get_twitter_service_endpoint() + '/send_text', query)
+    status_code, response_dict = cumulus_comms.call_rest_api(get_env.get_twitter_service_endpoint() + '/send_text', query)
 
     if response_dict['status'] == 'OK' :
         tweet_len = response_dict['tweet_len'].__str__()
@@ -77,7 +78,7 @@ def send_tweet_with_video(tweet_text, filename, uuid):
     query['lon'] = -1.3776                      # Stockcross
     query['video_pathname'] = filename
 
-    status_code, response_dict = call_rest_api.call_rest_api(get_env.get_twitter_service_endpoint() + '/send_video', query)
+    status_code, response_dict = cumulus_comms.call_rest_api(get_env.get_twitter_service_endpoint() + '/send_video', query)
 
     # print('status_code=' + status_code.__str__())
     # pprint(response_dict)
@@ -87,9 +88,6 @@ def send_tweet_with_video(tweet_text, filename, uuid):
         print('Tweet sent OK, tweet_len=' + tweet_len + ', uuid=' + uuid.__str__())
     else:
         print(response_dict['status'])
-
-
-
 
 
 def main():
@@ -146,6 +144,16 @@ def main():
             wind_knots_2m = float(cumulus_weather_info['WindAverage'])
             solar = cumulus_weather_info['SolarRad']
 
+            # common code with synopsisd
+            altitude_deg = solar_rad_expected.calc_altitude(lat, lon)
+            solar_radiation_theoretical = solar_rad_expected.get_solar_radiation_theoretical(altitude_deg)
+
+            # derived cloud coverage estimate
+            cloud_coverage_percent = solar_rad_expected.calc_cloud_coverage(solar, solar_radiation_theoretical)
+            okta = okta_funcs.coverage_to_okta(cloud_coverage_percent)
+            okta_text = okta_funcs.convert_okta_to_cloud_cover(okta)[0]
+
+
             synopsis_code, synopsis_text = synopsis.get_synopsis(temp_c, wet_bulb_c, dew_point_c, rain_rate,
                                                                  wind_knots_2m, solar)
             # ' wmo4680=' + synopsis_code.__str__() + ' (' + synopsis_text + ')' + \
@@ -168,7 +176,8 @@ def main():
 
             tweet_text = ' Stockcross, UK : fcast *' + cumulus_weather_info['Forecast'] + '*' + \
                          ', wmo4680=' + synopsis_code.__str__() + ' (' + synopsis_text + ')' + \
-                         ', solar=' + solar.__str__()
+                         ', solar=' + solar.__str__() + \
+                         ', okta=' + okta_text
 
 
             print(tweet_text)
@@ -180,7 +189,7 @@ def main():
             else:
                 webcam_query['uuid'] = this_uuid.__str__()
                 print('Requesting webcam mp4 video and a jpg from webcam-service, uuid=' + this_uuid.__str__())
-                status_code, response_dict = call_rest_api.call_rest_api(get_env.get_webcam_service_endpoint() + '/get_video', webcam_query)
+                status_code, response_dict = cumulus_comms.call_rest_api(get_env.get_webcam_service_endpoint() + '/get_video', webcam_query)
                 pprint(response_dict)
 
                 if response_dict['status'] != 'OK':
