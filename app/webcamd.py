@@ -111,6 +111,9 @@ def main():
         webcam_query['video_length_secs'] = video_length_secs
         webcam_query['preamble_secs'] = preamble_secs
 
+        lat = 51.4151  # Stockcross - move to artifact definitions
+        lon = -1.3776  # Stockcross
+
         print(my_app_name + ' started, version=' + version)
         print('stage=' + stage)
         if stage == 'DEV':
