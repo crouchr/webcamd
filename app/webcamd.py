@@ -66,7 +66,7 @@ def send_tweet(tweet_text, uuid):
             print(response_dict['status'])
 
     except Exception as e:
-        print('Error : ' + e.__str__())
+        print('Error : send_tweet() : ' + e.__str__())
 
 
 def send_tweet_with_video(tweet_text, filename, uuid):
@@ -95,7 +95,7 @@ def send_tweet_with_video(tweet_text, filename, uuid):
             print(response_dict['status'])
 
     except Exception as e:
-        print('Error : ' + e.__str__())
+        print('Error : send_tweet_with_video() : ' + e.__str__())
 
 
 def main():
@@ -194,7 +194,7 @@ def main():
                          ', temp=' + temp_c.__str__() + \
                          ', solar=' + solar.__str__() + \
                          ', okta=' + okta.__str__() + ' (' + okta_text + ')'
-                print(tweet_text)
+                print(tweet_text)   # FIXME : remove leading space
 
                 if solar < float(min_solar) or solar > float(max_solar):                  # do not bother taking video if it is too dark
                     send_tweet(tweet_text, this_uuid)
@@ -221,7 +221,7 @@ def main():
                         tweet_text = tweet_text + ' ' + filename
                         send_tweet_with_video(tweet_text, mp4_filename, this_uuid)
                     else:
-                        print('Error : mp4_filename=' + mp4_filename.__str__())
+                        print('Error : unexpected mp4_filename=' + mp4_filename.__str__())
                         raise()
 
             except Exception as e:
@@ -239,7 +239,7 @@ def main():
             time.sleep(sleep_secs)
 
     except Exception as e:
-        print('Fatal error : ' + e.__str__())
+        print('Fatal error : main() : ' + e.__str__())
         traceback.print_exc()
 
 

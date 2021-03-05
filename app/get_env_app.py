@@ -62,7 +62,7 @@ def get_mins_between_videos():
     if 'MINS_BETWEEN_VIDEOS' in os.environ:
         mins_between_videos = int(os.environ['MINS_BETWEEN_VIDEOS'])
     else:
-        mins_between_videos = 60    # was 15
+        mins_between_videos = 15    # i.e. want faster turnaround when running in development IDE
 
     return mins_between_videos
 
