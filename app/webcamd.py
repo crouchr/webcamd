@@ -150,6 +150,7 @@ def main():
                 temp_c = float(cumulus_weather_info['OutdoorTemp'])
                 pressure = float(cumulus_weather_info['Pressure'])
                 dew_point_c = float(cumulus_weather_info['OutdoorDewpoint'])
+                humidity_c = float(cumulus_weather_info['OutdoorHum'])
                 wet_bulb_c = wet_bulb.get_wet_bulb(temp_c, pressure, dew_point_c)
                 rain_rate = float(cumulus_weather_info['RainRate'])
                 wind_knots_2m = float(cumulus_weather_info['WindAverage'])
@@ -160,8 +161,8 @@ def main():
                 solar_radiation_theoretical = solar_rad_expected.get_solar_radiation_theoretical(altitude_deg)
 
                 synopsis_code, synopsis_text = synopsis.get_synopsis(temp_c, wet_bulb_c, dew_point_c, rain_rate,
-                                                                 wind_knots_2m, solar)
-                if 'fog' in synopsis_text:
+                                                                 wind_knots_2m, solar, humidity_c)
+                if 'fog' in synopsis_text.lower():
                     is_fog = True
                 else:
                     is_fog = False
